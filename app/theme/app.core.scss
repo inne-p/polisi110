@@ -1,0 +1,16 @@
+// http://ionicframework.com/docs/v2/theming/
+
+
+// App Shared Imports
+// --------------------------------------------------
+// These are the imports which make up the design of this app.
+// By default each design mode includes these shared imports.
+// App Shared Sass variables belong in app.variables.scss.
+
+@import "../pages/home/home";
+@import "../pages/laporan/laporan";
+@import "../pages/kasus-110/kasus-110.scss";
+@import "../pages/login/login.scss";
+@import "../pages/register/register.scss";
+@import "../pages/switch/switch.scss";
+@import "../icon/ionicons.scss";

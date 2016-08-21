@@ -1,0 +1,32 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Login</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+<ion-list>
+    <form (ngSubmit)="getLogin()" #loginForm="ngForm">
+	<ion-item>
+		<ion-label floating>NRP</ion-label>
+		<ion-input class="form-control" required [(ngModel)]="login.nrp" type="tel" name="nrp" id="nrp" #nrp="ngModel"></ion-input>
+		<div [hidden]="nrp.valid || nrp.pristine" 
+             class="alert alert-danger">
+          NRP is required
+        </div>
+	</ion-item>
+	<ion-item>
+		<ion-label floating>Password</ion-label>
+		<ion-input class="form-control" required [(ngModel)]="login.password" type="password" name="passwd" id="passwd"></ion-input>
+	</ion-item>
+	<ion-item>
+	<button class="button button-large button-positive icon-left" type="submit" block [disabled]="!loginForm.form.valid">
+		<ion-icon name="log-in"></ion-icon>Login</button>
+	</ion-item>
+	</form>
+</ion-list>
+
+</ion-content>

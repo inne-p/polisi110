@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-navbar>
+    <button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Laporan Polisi</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content scroll padding>
+<ion-list>
+    <form (ngSubmit)="saveIt()">
+	<ion-item>
+		<ion-label floating>Jenis Gangguan</ion-label>
+		<ion-select id="jenis" [(ngModel)]="laporan.jenis" name="jenis">
+			<ion-option value="-" default>-</ion-option>
+			<ion-option value="Kebakaran">Kebakaran</ion-option>
+			<ion-option value="Laka Lantas">Laka Lantas</ion-option>
+			<ion-option value="Pencurian">Pencurian</ion-option>
+			<ion-option value="Perampokan">Perampokan</ion-option>
+			<ion-option value="Bencana Alam">Bencana Alam</ion-option>
+			<ion-option value="Lain-lain">Penculikan</ion-option>
+			<ion-option value="Lain-lain">Bentrok Massa</ion-option>
+			<ion-option value="Lain-lain">Perkelahian Pelajar</ion-option>
+			<ion-option value="Lain-lain">Pembunuhan</ion-option>
+		</ion-select>
+	</ion-item>
+	<ion-item>
+		<ion-label floating>Tempat Kejadian</ion-label>
+		<ion-input type="text" id="alamat" [(ngModel)]="laporan.alamat" name="alamat"></ion-input>
+	</ion-item>
+	<ion-item>
+	   <ion-label floating>Uraian Singkat</ion-label>
+	   <ion-textarea id="isiLaporan" [(ngModel)]="laporan.isiLaporan" name="isiLaporan"></ion-textarea>
+	</ion-item>
+	<ion-item>
+	   <ion-label stacked>Foto</ion-label>
+	</ion-item>
+	<ion-item>
+	<button block>
+		<ion-icon name="send"></ion-icon>Add</button>
+	</ion-item>
+	</form>
+</ion-list>
+<img src="{{ base64Image }}"/>
+</ion-content>
+<button fab primary fab-bottom fab-right (click)="captureCamera()" style="z-index:100">
+    <ion-icon name="camera"></ion-icon>
+</button>

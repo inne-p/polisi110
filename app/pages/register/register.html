@@ -1,0 +1,23 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Register</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+<ion-list>
+    <form (ngSubmit)="getRegister()" #registerForm="ngForm">
+	<ion-item>
+		<ion-label floating>Nomor Handphone</ion-label>
+		<ion-input type="text" class="form-control" required [(ngModel)]="register.nohp" type="tel" name="nohp" id="nohp" #nohp="ngModel"></ion-input>
+	</ion-item>
+	<ion-item>
+	<button class="button button-large button-positive icon-left" type="submit" block [disabled]="!registerForm.form.valid">
+		<ion-icon name="construct"></ion-icon>Register</button>
+	</ion-item>
+	</form>
+</ion-list>
+</ion-content>
