@@ -8,6 +8,7 @@ import { Laporan } from './pages/laporan/laporan';
 import { RegisterPage } from './pages/register/register';
 import { LoginPage } from './pages/login/login';
 import { Kasus110Page } from './pages/kasus-110/kasus-110';
+import { KasusSayaPage } from './pages/kasus-saya/kasus-saya';
 import { LocationTracker } from './providers/location-tracker/location-tracker';
 
 @Component({
@@ -25,7 +26,7 @@ class MyApp {
     this.pages = [
       { title: 'Beranda', component: Home },
       { title: 'Laporan Polisi', component: Laporan },
-      { title: 'Kasus', component: Kasus110Page },	
+      { title: 'Laporan Saya', component: KasusSayaPage },	
       { title: 'Ganti Petugas', component: LoginPage }
     ];
 
@@ -33,7 +34,7 @@ class MyApp {
 
   initializeApp(tracker: LocationTracker) {
     this.platform.ready().then(() => {
-		tracker.getConfig("nohp").then((data) => {
+		tracker.getConfig("nrp").then((data) => {
 			let res = data.res;
 			if (res.rows.length>0) {
 				tracker.getConfig("token").then((data) => {

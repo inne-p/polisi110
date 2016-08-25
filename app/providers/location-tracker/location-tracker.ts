@@ -26,24 +26,11 @@ export class LocationTracker {
   storage : any;
   public nrp: string = '';
   config: any;
-  public nohp: string = '';
   public token: string = '';
   
   public isRegistered() {
-    let retval = false;
-    this.getConfig("nohp").then((data) => {
-		let res = data.res;
-		if (res.rows.length>0) {
-			this.nohp = res.rows.item(0).value;
-			retval = true;
-		}
-		else{ retval = false;}
-	}, (error) => {
-            console.log("ERROR: " + JSON.stringify(error));
-			retval = false;
-    });
-	console.log(retval);
-	return retval;
+	if (this.nrp == undefined) {return false};
+	return true;
   }
     
   public logedin(nrp: string, data) {
@@ -62,18 +49,7 @@ export class LocationTracker {
             console.log(error);
     });
   }
-  
-  public register(nohp: string) {
-    this.nohp = nohp;
-    this.storage.query("INSERT OR REPLACE INTO config (name, value) values (?,?)",
-	["nohp", nohp]).then((data) => {
-		console.log("save nohp");
-		this.upsert_device(nohp);
-	}, (error) => {
-            console.log(error);
-    });
-  }
-  
+    
   constructor(private http: Http, private platform: Platform) {
    	this.storage = new Storage(SqlStorage);
     this.storage.query("CREATE TABLE IF NOT EXISTS tracker (id INTEGER PRIMARY KEY AUTOINCREMENT, tgl TEXT, lokasi TEXT, status TEXT) ");
@@ -83,17 +59,6 @@ export class LocationTracker {
  
     this.position = Observable.create(observer => {
       this.positionObserver = observer;
-    });
-	this.getConfig("nohp").then((data) => {
-		let res = data.res;
-		if (res.rows.length>0) {
-  		  console.log(res.rows);
-		  for (let i = 0; i<res.rows.length; i++)
-			this.nohp = res.rows.item(i).value;
-		  console.log(this.nohp);
-		}
-	}, (error) => {
-            console.log("ERROR: " + JSON.stringify(error));
     });
 	this.getConfig("token").then((data) => {
 		let res = data.res;
@@ -258,24 +223,6 @@ export class LocationTracker {
 			.toPromise()
 			.then(() => data)
 			.catch(this.handleError);
-  }
-
-  upsert_device(data: any = undefined) {
-	let url: string = this.url + "devices";
-    if (this.nohp) {
-		let postBody: any = {
-		  "device_desc": "",
-		  "phonenumber": data,
-		  "idKantor": 0
-		};
-		let headers = new Headers({ 'Content-Type': 'application/json' });
-		let options = new RequestOptions({ headers: headers });
-		console.log(postBody);
-		return this.http.put(url, postBody, options)
-				.toPromise()
-				.then(() => data)
-				.catch(this.handleError);
-	}
   }
 
   handleError(error) {

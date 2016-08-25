@@ -14,65 +14,76 @@ import { LocationTracker } from '../../providers/location-tracker/location-track
 
 export class Laporan {
   selectedItem: any;
+  public showing= true;
   private storage: Storage;
   public base64Image: string;
   laporan :any = {}
   public url: string = "http://107.167.177.146/api-polisi110/api/";
 
-  constructor(private http: Http, public sqliteService: SqliteService, public tracker: LocationTracker, private alertController:  AlertController) {
+  constructor(private nav: NavController, private http: Http, public sqliteService: SqliteService, public tracker: LocationTracker, private alertController:  AlertController) {
 	this.base64Image = "150x150.png";
 
    }
 
   saveIt() {
-    //this.storage.query("INSERT INTO lp (tgl, jenis, device, geolokasi, alamat, laporan, foto) VALUES (?, ?, ?, ?, ?, ?, ?)", 
-	//[new Date().toLocaleDateString(), "Raboy"]).then((data) => {
-    //}, (error) => {
-    //        console.log(error);
-    //});
+
 	console.log("saveIt");
+
+    this.showing = false;
 	Geolocation.getCurrentPosition().then((position) => {
 	    this.laporan.koordinat = "{" + position.coords.latitude + "," + position.coords.longitude + "}";
 		if (this.base64Image) {
 			this.laporan.foto = this.base64Image;
 		}
-		this.sqliteService.saveLaporan(this.laporan);
+		//this.sqliteService.saveLaporan(this.laporan);
 	
-	let url= this.url + "police_reports?access_token=" + this.tracker.token;
-	let postBodyLogin: any = {
-	  "id" : 0,
-	  "foto": this.base64Image,
-	  "isilaporan": this.laporan.isiLaporan,
-	  "jenis": this.laporan.jenis,
-	  "nrp": this.tracker.nrp,
-	  "tgl": new Date().toJSON(),
-	  "lokasi_alamat": this.laporan.alamat,
-	  "geolokasi": {
-		"lat": position.coords.latitude,
-		"lng": position.coords.longitude
-	  }
-	};
-	let headers = new Headers({ 'Content-Type': 'application/json' });
-	let options = new RequestOptions({ headers: headers });
-	this.http.post(url, postBodyLogin, options)
-			.subscribe(data => 
-			{
-				console.log(data);
-				this.laporan.jenis = 0;
-				this.laporan.alamat = "";
-				this.laporan.isiLaporan = "";
-				let alert = this.alertController.create({
-				  title: 'Selamat',
-				  subTitle: 'Pengiriman laporan berhasil',
-				  buttons: ['OK']
+		let url= this.url + "police_reports?access_token=" + this.tracker.token;
+		let postBodyLogin: any = {
+		  "id" : 0,
+		  "foto": this.base64Image,
+		  "isilaporan": this.laporan.isiLaporan,
+		  "jenis": this.laporan.jenis,
+		  "nrp": this.tracker.nrp,
+		  "tgl": new Date().toJSON(),
+		  "lokasi_alamat": this.laporan.alamat,
+		  "geolokasi": {
+			"lat": position.coords.latitude,
+			"lng": position.coords.longitude
+		  }
+		};
+		let headers = new Headers({ 'Content-Type': 'application/json' });
+		let options = new RequestOptions({ headers: headers });
+		this.http.post(url, postBodyLogin, options)
+				.subscribe(data => 
+				{
+					console.log(data);
+					this.showing = true;
+					this.laporan.jenis = 0;
+					this.laporan.alamat = "";
+					this.laporan.isiLaporan = "";
+					this.base64Image = "150x150.png";
+					let alert = this.alertController.create({
+					  title: 'Selamat',
+					  subTitle: 'Pengiriman laporan berhasil',
+					  buttons: ['OK']
+					});
+					alert.present();
+				},
+				error => 
+				{
+					this.showing = true;
+					console.log(error);
+					this.showAlert();
 				});
-				alert.present();
-			},
-			error => 
-			{
-				console.log(error);
-				this.showAlert();
-			});
+	},
+	(error)=> {
+	    this.showing = true;
+		let alert = this.alertController.create({
+		  title: 'Perhatian',
+		  subTitle: 'Geolokasi (mendapatkan koordinat gagal, tidak bisa kirim data',
+		  buttons: ['OK']
+		});
+		alert.present();
 	});
   }
   

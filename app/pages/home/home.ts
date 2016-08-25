@@ -20,7 +20,7 @@ export class Home {
   locationAccuracyMarker: any;
   latlng : any;
   mapInitialised: boolean = false;
-  apiKey: any = "AIzaSyB16sGmIekuGIvYOfNoW9T44377IU2d2Es";
+  apiKey: any = "AIzaSyAq1bcL5vjPlaJpKDKoiD3SOkw1LgPDHWg";
   http: any;
   public buttonOn: any = false;
   
@@ -82,6 +82,9 @@ export class Home {
   
   centerOnMe(location) {
     this.map.setCenter(new google.maps.LatLng(location.latitude, location.longitude));
+	if (location.heading) {
+		this.map.setHeading(location.heading);
+	}
     this.setCurrentLocationMarker(location);
   };
   

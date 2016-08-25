@@ -27,8 +27,8 @@ export class SqliteService {
   public saveLaporan(laporan: DataLaporan)
   {
 	console.log(laporan);
-	this.storage.query("INSERT INTO LP (tgl, jenis, device, geolokasi, alamat, laporan, foto) values (?,?,?,?,?,?,?)",
-	[new Date().toJSON(), laporan.jenis,"",laporan.koordinat, laporan.alamat, laporan.isiLaporan, laporan.foto]).then((data) => {
+	this.storage.query("INSERT INTO LP (tgl, jenis, device, geolokasi, alamat, laporan) values (?,?,?,?,?,?)",
+	[new Date().toJSON(), laporan.jenis,"",laporan.koordinat, laporan.alamat, laporan.isiLaporan]).then((data) => {
 		console.log(this.getLaporan());
 	}, (error) => {
             console.log(error);

@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-navbar hideBackButton="true">
+    <button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Kasus Saya</ion-title>
+	</ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+        <ion-list>
+			<ion-item *ngFor="let item of itemsList; let idx = index" type="text-wrap">
+				<button clear ion-item (click)="detailmycase(item)">
+				<h2><b>Jenis: </b>{{item.jenis}}</h2>
+				<h4><b>Waktu Kejadian: </b>{{item.tgl}}</h4>
+				<h4><b>Tempat Kejadian: </b>{{item.lokasi_alamat}}</h4>
+				<ion-icon item-right name="arrow-dropright"></ion-icon>
+				</button>
+			</ion-item >
+		</ion-list>
+
+</ion-content>

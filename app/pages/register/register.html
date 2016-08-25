@@ -11,10 +11,6 @@
 <ion-list>
     <form (ngSubmit)="getRegister()" #registerForm="ngForm">
 	<ion-item>
-		<ion-label stacked>Nomor Handphone</ion-label>
-		<ion-input type="text" class="form-control" required [(ngModel)]="register.nohp" type="tel" name="nohp" id="nohp" #nohp="ngModel"></ion-input>
-	</ion-item>
-	<ion-item>
 		<ion-label stacked>NRP</ion-label>
 		<ion-input class="form-control" required [(ngModel)]="register.nrp" type="tel" name="nrp" id="nrp" #nrp="ngModel"></ion-input>
 		<div [hidden]="nrp.valid || nrp.pristine" 
@@ -32,5 +28,8 @@
 		<ion-icon name="construct"></ion-icon>Register</button>
 	</ion-item>
 	</form>
+	<ion-item>
+        <button class=" button button-positive  button-block button-clear icon-left" id="mendaftar-button4" (click)="gologin()">Sudah pernah mendaftar</button>
+	</ion-item>
 </ion-list>
 </ion-content>

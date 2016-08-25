@@ -1,0 +1,38 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Detail Kasus Saya</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+	<ion-list>
+		<ion-item  type="text-wrap" >
+		<h2><b>Jenis</b></h2>
+		<h2>{{kasus.jenis}}</h2>
+		</ion-item >
+		<ion-item  type="text-wrap" >
+		<h2><b>Lokasi Alamat</b></h2>
+		<h2>{{kasus.lokasi_alamat}}</h2>
+		</ion-item >
+		<ion-item  type="text-wrap" >
+		<h2><b>Tgl Kejadian</b></h2>
+		<h2>{{kasus.tgl}}</h2>
+		</ion-item >
+		<ion-item  type="text-wrap" >
+		<h2><b>Uraian</b></h2>
+		<h2>{{kasus.isilaporan}}</h2>
+		</ion-item >
+		<ion-item>
+		<h2><b>Peta Kejadian</b></h2><br/>
+		<center><img ion-item  (click)="openMap()" src="https://maps.googleapis.com/maps/api/staticmap?markers=size:red|label:S|{{ kasus.geolokasi.lat }},{{ kasus.geolokasi.lng }}&zoom=16&size=400x400&maptype=roadmap&key=AIzaSyAq1bcL5vjPlaJpKDKoiD3SOkw1LgPDHWg"/></center>
+		</ion-item >
+		<ion-item>
+		<h2><b>Foto</b></h2><br/>
+		<center><img src="{{ kasus.foto }}"/></center>
+		</ion-item >
+	</ion-list>
+
+</ion-content>
