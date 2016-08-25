@@ -17,15 +17,17 @@ declare var Connection;
 
 @Injectable()
 export class LocationTracker {
+  public url: string = "http://107.167.177.146/api-polisi110/api/";
   positionObserver: any;
   position: any;
   watch: any;
   subscription : any;
   onDevice: boolean;
   storage : any;
-  public nrp: string;
+  public nrp: string = '';
   config: any;
-  public nohp: string;
+  public nohp: string = '';
+  public token: string = '';
   
   public isRegistered() {
     let retval = false;
@@ -44,14 +46,29 @@ export class LocationTracker {
 	return retval;
   }
     
-  public logedin(nrp: string) {
+  public logedin(nrp: string, data) {
     this.nrp = nrp;
+	this.token = data.id;
+	this.storage.query("INSERT OR REPLACE INTO config (name, value) values (?,?)",
+	["token", this.token]).then((data) => {
+		console.log("save token");
+	}, (error) => {
+            console.log(error);
+    });
+	this.storage.query("INSERT OR REPLACE INTO config (name, value) values (?,?)",
+	["nrp", this.nrp]).then((data) => {
+		console.log("save nrp");
+	}, (error) => {
+            console.log(error);
+    });
   }
+  
   public register(nohp: string) {
     this.nohp = nohp;
     this.storage.query("INSERT OR REPLACE INTO config (name, value) values (?,?)",
 	["nohp", nohp]).then((data) => {
 		console.log("save nohp");
+		this.upsert_device(nohp);
 	}, (error) => {
             console.log(error);
     });
@@ -70,7 +87,30 @@ export class LocationTracker {
 	this.getConfig("nohp").then((data) => {
 		let res = data.res;
 		if (res.rows.length>0) {
-			this.nohp = res.rows.item(0).value;
+  		  console.log(res.rows);
+		  for (let i = 0; i<res.rows.length; i++)
+			this.nohp = res.rows.item(i).value;
+		  console.log(this.nohp);
+		}
+	}, (error) => {
+            console.log("ERROR: " + JSON.stringify(error));
+    });
+	this.getConfig("token").then((data) => {
+		let res = data.res;
+		if (res.rows.length>0) {
+		  for (let i = 0; i<res.rows.length; i++)
+			this.token = res.rows.item(i).value;
+ 		  console.log("Token : " + this.token );
+		}
+	}, (error) => {
+            console.log("ERROR: " + JSON.stringify(error));
+    });
+	this.getConfig("nrp").then((data) => {
+		let res = data.res;
+		if (res.rows.length>0) {
+		  for (let i = 0; i<res.rows.length; i++)
+			this.nrp = res.rows.item(i).value;
+ 		  console.log("NRP : " + this.nrp );
 		}
 	}, (error) => {
             console.log("ERROR: " + JSON.stringify(error));
@@ -95,31 +135,37 @@ export class LocationTracker {
   
   startTracking() {
 	// In App Tracking
-  	  console.log("start tacking");
+  	  console.log("start tracking");
 	 
 	  let options = {
 		frequency: 3000, 
 		enableHighAccuracy: true     
 	  };
-	 
 	  this.watch = Geolocation.watchPosition(options);
 	 
 	  this.subscription = this.watch.subscribe((data) => {
+	    console.log("foreground location");
 	  	this.notifyLocation(data.coords);
 	  });
+	 
 	  // Background Tracking
 	 
 	  let backgroundOptions = {
-		desiredAccuracy: 10,
-		stationaryRadius: 10,
-		distanceFilter: 30,
+		desiredAccuracy: 0,
+		stationaryRadius: 5,
+		distanceFilter: 5,
 		debug: true, //  enable this hear sounds for background-geolocation life-cycle.
-        stopOnTerminate: false
+        stopOnTerminate: false,
+		startOnBoot: true,
+		interval: 6000,
+		fastestInterval: 5000,
+		locationProvider: 0
 	  };
 	 
 	  BackgroundGeolocation.configure(backgroundOptions).then((location) => {
+	    console.log("background location");
 		this.notifyLocation(location);
-		
+		BackgroundGeolocation.finish();
 	  }).catch( (err) => {
 		console.log(err);
 	  });
@@ -130,7 +176,7 @@ export class LocationTracker {
   }
  
   stopTracking() {
-    BackgroundGeolocation.finish();
+    BackgroundGeolocation.stop();
 	this.subscription.unsubscribe(); 
 	let d : any = {
 		nrp : this.nrp,
@@ -138,7 +184,7 @@ export class LocationTracker {
 		longitude : 0,
 		status : 0
 	}
-	this.upsert(d);
+	this.upsert_police(d);
 	
 	this.storage.query("INSERT OR REPLACE INTO tracker (tgl, lokasi, status) values (?,?,?)",
 	[new Date().toJSON(), "", 'inactive']).then((data) => {
@@ -150,9 +196,15 @@ export class LocationTracker {
  
   public updateConfig(name: string, value: string)
   {
-	this.storage.query("INSERT OR REPLACE INTO config (name, value) values (?,?)",
-	[name, value]).then((data) => {
-		console.log("savetrack inactive");
+	this.storage.query("DELETE FROM config where name = ?",
+	[name]).then((data) => {
+		console.log("delete config");
+		this.storage.query("INSERT OR REPLACE INTO config (name, value) values (?,?)",
+		[name, value]).then((data) => {
+			console.log("insert config");
+		}, (error) => {
+				console.log(error);
+		});
 	}, (error) => {
             console.log(error);
     });
@@ -165,7 +217,7 @@ export class LocationTracker {
   
   notifyLocation(location) {
 	this.positionObserver.next(location);
-	//nsole.log(location);
+	console.log(location);
 	let posisi = "{" + location.latitude + "," + location.longitude + "}";
 	this.storage.query("INSERT OR REPLACE INTO tracker (tgl, lokasi, status) values (?,?,?)",
 	[new Date().toJSON(), posisi, 'active']).then((data) => {
@@ -176,17 +228,17 @@ export class LocationTracker {
 			longitude : location.longitude,
 			status : 1
 		}
-		this.upsert(d);
+		this.upsert_police(d);
 	}, (error) => {
             console.log(error);
     });
   }
   
-    upsert(data: any = undefined) {
-    let url: string = "http://107.167.177.146/api-polisi110/api/polices";
-	
+  upsert_police(data: any = undefined) {
+	let url: string = this.url + "polices?access_token=" + this.token;
+
 	let postBody: any = {
-	  "NRP": data.nrp,
+	  "NRP": "123456789",
 	  "email": "",
 	  "idKantor": 0,
 	  "lastPosition": {
@@ -197,7 +249,7 @@ export class LocationTracker {
 	  "lastTimePosition": new Date().toJSON(),
 	  "lastTimeStatus": new Date().toJSON(),
 	  "name": "",
-	  "phonenumber": this.nohp
+	  "phonenumber": "08112282119"
     };
 	let headers = new Headers({ 'Content-Type': 'application/json' });
     let options = new RequestOptions({ headers: headers });
@@ -206,11 +258,30 @@ export class LocationTracker {
 			.toPromise()
 			.then(() => data)
 			.catch(this.handleError);
+  }
+
+  upsert_device(data: any = undefined) {
+	let url: string = this.url + "devices";
+    if (this.nohp) {
+		let postBody: any = {
+		  "device_desc": "",
+		  "phonenumber": data,
+		  "idKantor": 0
+		};
+		let headers = new Headers({ 'Content-Type': 'application/json' });
+		let options = new RequestOptions({ headers: headers });
+		console.log(postBody);
+		return this.http.put(url, postBody, options)
+				.toPromise()
+				.then(() => data)
+				.catch(this.handleError);
 	}
-	handleError(error) {
+  }
+
+  handleError(error) {
         console.error(error);
 		return Observable.throw(error.json().error || 'Server error');
-	}
+  }
   
 
 }

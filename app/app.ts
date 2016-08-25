@@ -1,6 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { ionicBootstrap, Platform, Nav } from 'ionic-angular';
 import { StatusBar } from 'ionic-native';
+import {enableProdMode} from '@angular/core';
 
 import { Home } from './pages/home/home';
 import { Laporan } from './pages/laporan/laporan';
@@ -25,7 +26,7 @@ class MyApp {
       { title: 'Beranda', component: Home },
       { title: 'Laporan Polisi', component: Laporan },
       { title: 'Kasus', component: Kasus110Page },	
-      { title: 'Ganti Petugas', component: Laporan }
+      { title: 'Ganti Petugas', component: LoginPage }
     ];
 
   }
@@ -35,7 +36,12 @@ class MyApp {
 		tracker.getConfig("nohp").then((data) => {
 			let res = data.res;
 			if (res.rows.length>0) {
-				this.nav.setRoot(LoginPage);
+				tracker.getConfig("token").then((data) => {
+					this.nav.setRoot(Home);
+				},
+				(error)=> {
+					this.nav.setRoot(LoginPage);
+				});
 			}
 			else{ 				
 				this.nav.setRoot(RegisterPage);
@@ -52,5 +58,5 @@ class MyApp {
     this.nav.setRoot(page.component);
   }
 }
-
+enableProdMode();
 ionicBootstrap(MyApp, [LocationTracker]);

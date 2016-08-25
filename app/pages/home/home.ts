@@ -22,6 +22,7 @@ export class Home {
   mapInitialised: boolean = false;
   apiKey: any = "AIzaSyB16sGmIekuGIvYOfNoW9T44377IU2d2Es";
   http: any;
+  public buttonOn: any = false;
   
   ionViewLoaded(){
    // this.loadMap();
@@ -91,6 +92,10 @@ export class Home {
   constructor(tracker: LocationTracker) {
     this.tracker = tracker;
 	this.loadGoogleMaps();
+  }
+  onPageWillLeave() {
+	this.stop();
+	this.online();
   }
   
   loadGoogleMaps(){
@@ -196,15 +201,16 @@ export class Home {
     });
   }
 
-  online(e) {
+  online() {
   
      console.log("going online");
-	 console.log(e);
-	 if (e._checked) {
+	 if (!this.buttonOn) {
 		this.start();
+		this.buttonOn = true;
 	 }
 	 else {
 		this.stop();
+		this.buttonOn = false;
 	 }
   }
  

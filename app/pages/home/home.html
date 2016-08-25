@@ -3,8 +3,9 @@
     <button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-	<ion-title>Polisi@110</ion-title>
-	<ion-toggle style="float: right;" value="Online" checked="false" (ionChange)="online($event)"></ion-toggle>
+	<center>
+	<button [class.button-danger]="buttonOn==true" round (click)="online()">{{buttonOn?'Offline':'Online'}}</button>
+	</center>
 
 	</ion-navbar>
 </ion-header>
