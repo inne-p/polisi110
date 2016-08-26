@@ -32,6 +32,26 @@ export class LocationTracker {
 	if (this.nrp == undefined) {return false};
 	return true;
   }
+  
+  public logOut(){
+	  this.storage.query("DROP TABLE IF EXISTS config");
+	  //Below code is not working
+	/*this.getConfig("nrp").then((data) => {
+		let res = data.res;
+		if (res.rows.length>0) {
+		  	for (let i = 0; i<res.rows.length; i++)
+					this.nrp = res.rows.item(i).value;
+ 		  	console.log("NRP : " + this.nrp );
+				this.storage.query("DROP TABLE IF EXISTS config");
+				let sql = 'DELETE FROM config WHERE name = (?)';
+				this.storage.query(sql, [this.nrp]);
+			}
+		}, (error) => {
+						console.log("ERROR: " + JSON.stringify(error));
+		});*/
+
+
+	}
     
   public logedin(nrp: string, data) {
     this.nrp = nrp;
