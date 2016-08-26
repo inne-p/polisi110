@@ -14,6 +14,7 @@ export class LoginPage {
   submitted = false;
   
   constructor(private http: Http, public alertController: AlertController, public navCtrl: NavController, private tracker: LocationTracker) {
+    this.tracker.logOut();
   }
   
   showAlert() {
