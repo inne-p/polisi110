@@ -203,7 +203,7 @@ export class LocationTracker {
 	let url: string = this.url + "polices?access_token=" + this.token;
 
 	let postBody: any = {
-	  "NRP": "123456789",
+	  "NRP": data.nrp,
 	  "email": "",
 	  "idKantor": 0,
 	  "lastPosition": {
@@ -214,7 +214,7 @@ export class LocationTracker {
 	  "lastTimePosition": new Date().toJSON(),
 	  "lastTimeStatus": new Date().toJSON(),
 	  "name": "",
-	  "phonenumber": "08112282119"
+	  "phonenumber": ""
     };
 	let headers = new Headers({ 'Content-Type': 'application/json' });
     let options = new RequestOptions({ headers: headers });
